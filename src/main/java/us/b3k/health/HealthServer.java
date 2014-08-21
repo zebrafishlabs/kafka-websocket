@@ -78,11 +78,11 @@ public class HealthServer implements Container {
 
 			connection.connect(address);
 		} catch (IOException e) {
-			System.out.println("Error starting server");
+			System.out.println("Error starting HealthServer");
 		}
 	}
 
 	public static void main(String[] list) throws Exception {
 		run(8787);
-   }
+	}
 }
