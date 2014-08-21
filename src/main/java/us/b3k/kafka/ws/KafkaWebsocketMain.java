@@ -16,6 +16,7 @@
 
 package us.b3k.kafka.ws;
 
+import us.b3k.health.HealthServer;
 import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,10 +45,23 @@ public class KafkaWebsocketMain {
     }
 
     public static void main(String[] args) {
+
         PropertyConfigurator.configure(LOG4J_PROPS_PATH);
         Properties wsProps = loadPropsFromFile(SERVER_PROPS_PATH);
         Properties consumerProps = loadPropsFromFile(CONSUMER_PROPS_PATH);
         Properties producerProps = loadPropsFromFile(PRODUCER_PROPS_PATH);
+
+        String startHealthServer = wsProps.getProperty("health.server", "true");
+
+        if (startHealthServer.equals("true")) {
+            final int healthServerPort = Integer.valueOf(wsProps.getProperty("health.server.port", "8787"));
+            Thread t = new Thread() {
+                public void run() {
+                    HealthServer.run(healthServerPort);
+                }
+            };
+            t.start();
+        }
 
         KafkaWebsocketServer server = new KafkaWebsocketServer(wsProps, consumerProps, producerProps);
         server.run();
